@@ -53,4 +53,19 @@ public class ApiServiceImpl implements ApiService {
         // Convert response into a json object
         return new JSONObject(jsonText);
     }
+
+    @Override
+    public JSONObject getLight(String id) throws IOException {
+        return null;
+    }
+
+    @Override
+    public void setLight(int id, String color, boolean state) throws IOException {
+
+    }
+
+    @Override
+    public void deleteLight(int id) throws IOException {
+
+    }
 }

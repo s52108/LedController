@@ -51,15 +51,26 @@ public class LedControllerImpl implements LedController {
     }
 
     /**
-     * Turns off all LEDs in the group.
+     * Turns off all LEDs in the group using their original colors.
      *
      * @throws IOException if the request to the API fails.
      */
     public void turnOffAllLeds() throws IOException {
+        turnOffAllLeds(null);
+    }
+
+    /**
+     * Turns off all LEDs in the group, optionally using a specific color.
+     *
+     * @param overrideColor Optional color to use when turning off LEDs (null for original color).
+     * @throws IOException if the request to the API fails.
+     */
+    public void turnOffAllLeds(String overrideColor) throws IOException {
         List<JSONObject> groupLeds = getGroupLeds();
         for (JSONObject led : groupLeds) {
             int id = led.getInt("id");
-            apiService.setLight(id, led.getString("color"), false);
+            String color = (overrideColor != null) ? overrideColor : led.getString("color");
+            apiService.setLight(id, color, false);
         }
     }
 
@@ -75,8 +86,8 @@ public class LedControllerImpl implements LedController {
         List<JSONObject> groupLeds = getGroupLeds();
 
         for (int i = 0; i < turns * groupLeds.size(); i++) {
-            // Turn off all LEDs
-            turnOffAllLeds();
+            // Turn off all LEDs using the effect color
+            turnOffAllLeds(color);
 
             // Turn on the current LED
             int currentLedIndex = i % groupLeds.size();
@@ -88,7 +99,7 @@ public class LedControllerImpl implements LedController {
         }
 
         // Turn off all LEDs at the end
-        turnOffAllLeds();
+        turnOffAllLeds(color);
     }
 
     /**
