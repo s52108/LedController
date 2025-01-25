@@ -34,7 +34,7 @@ public class LedControllerImpl implements LedController {
 	public JSONObject GetLights() throws ApiServiceImpl, IOException {
 		return apiService.getLights();
 	}
-    public List<JSONObject> getGroupLeds() throws IOException {
+    public List<JSONObject> getGroupLeds() throws IOException, ApiServiceImpl {
         // Call `getLights` to get the status of all lights
         JSONObject response = apiService.getLights();
         JSONArray lights = response.getJSONArray("lights");
