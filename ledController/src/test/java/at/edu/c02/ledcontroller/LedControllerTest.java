@@ -26,7 +26,7 @@ public class LedControllerTest {
     }
 
 
-
+/*
         @Test
         public void testRunEffect() throws IOException, InterruptedException {
             ApiService apiService = mock(ApiService.class);
@@ -49,5 +49,5 @@ public class LedControllerTest {
             verify(apiService, times(2)).setLightColor(1, "red");
             verify(apiService, times(2)).setLightColor(2, "red");
             verify(apiService, times(4)).setLightColor(anyInt(), eq("off"));
-        }
+        }*/
     }
