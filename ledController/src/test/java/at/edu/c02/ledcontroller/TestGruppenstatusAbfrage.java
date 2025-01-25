@@ -6,12 +6,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Test class for LedControllerImpl.
+ * Test class for group status query functionality in LedControllerImpl.
  */
 public class TestGruppenstatusAbfrage {
 
@@ -27,7 +28,7 @@ public class TestGruppenstatusAbfrage {
     }
 
     @Test
-    public void testDemoMethod() throws IOException {
+    public void testGetGroupLeds() throws IOException {
         // Prepare a mocked response for `getLights`
         JSONObject mockResponse = new JSONObject();
         JSONArray lightsArray = new JSONArray();
@@ -35,43 +36,39 @@ public class TestGruppenstatusAbfrage {
         JSONObject light1 = new JSONObject();
         light1.put("id", 1);
         light1.put("color", "red");
+        light1.put("on", true);
+        light1.put("groupByGroup", new JSONObject().put("name", "A"));
+
+        JSONObject light2 = new JSONObject();
+        light2.put("id", 2);
+        light2.put("color", "green");
+        light2.put("on", false);
+        light2.put("groupByGroup", new JSONObject().put("name", "A"));
+
         lightsArray.put(light1);
+        lightsArray.put(light2);
 
         mockResponse.put("lights", lightsArray);
 
         // Configure the mock to return the prepared response
         when(apiService.getLights()).thenReturn(mockResponse);
 
-        // Call the demo method
-        ledController.demo();
-
-        // Verify that the correct methods were called
-        verify(apiService, times(1)).getLights();
-
-        // Optionally, assert system outputs (if required)
-        // For simplicity, these outputs are printed. Capturing them requires additional setup.
-    }
-
-    @Test
-    public void testGetLightStatus() throws IOException {
-        // Prepare a mocked response for `getLight`
-        JSONObject mockLightResponse = new JSONObject();
-        mockLightResponse.put("id", 1);
-        mockLightResponse.put("color", "blue");
-        mockLightResponse.put("status", "ON");
-
-        // Configure the mock to return the prepared response when called with ID 1
-        when(apiService.getLight("1")).thenReturn(mockLightResponse);
-
-        // Call the getLight method
-        JSONObject lightStatus = apiService.getLight("1");
+        // Call the getGroupLeds method
+        List<JSONObject> groupLeds = ((LedControllerImpl) ledController).getGroupLeds();
 
         // Assert the response
-        assertEquals(1, lightStatus.getInt("id"));
-        assertEquals("blue", lightStatus.getString("color"));
-        assertEquals("ON", lightStatus.getString("status"));
+        assertEquals(2, groupLeds.size());
+        assertEquals(1, groupLeds.get(0).getInt("id"));
+        assertEquals("red", groupLeds.get(0).getString("color"));
+        assertEquals(true, groupLeds.get(0).getBoolean("on"));
+        assertEquals("A", groupLeds.get(0).getJSONObject("groupByGroup").getString("name"));
+
+        assertEquals(2, groupLeds.get(1).getInt("id"));
+        assertEquals("green", groupLeds.get(1).getString("color"));
+        assertEquals(false, groupLeds.get(1).getBoolean("on"));
+        assertEquals("A", groupLeds.get(1).getJSONObject("groupByGroup").getString("name"));
 
         // Verify the interaction with the mock
-        verify(apiService, times(1)).getLight("1");
+        verify(apiService, times(1)).getLights();
     }
 }
