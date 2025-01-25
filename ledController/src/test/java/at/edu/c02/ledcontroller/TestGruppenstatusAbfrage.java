@@ -28,7 +28,7 @@ public class TestGruppenstatusAbfrage {
     }
 
     @Test
-    public void testGetGroupLeds() throws IOException {
+    public void testGetGroupLeds() throws IOException, ApiServiceImpl {
         // Prepare a mocked response for `getLights`
         JSONObject mockResponse = new JSONObject();
         JSONArray lightsArray = new JSONArray();

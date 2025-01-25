@@ -8,7 +8,7 @@ public class Main {
     /**
      * This is the main program entry point. TODO: add new commands when implementing additional features.
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ApiServiceImpl {
         LedController ledController = new LedControllerImpl(new ApiServiceImpl());
 
         String input = "";

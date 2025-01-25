@@ -19,8 +19,7 @@ public class LedControllerImpl implements LedController {
     }
 
     @Override
-    public void demo() throws IOException
-    {
+    public void demo() throws IOException, ApiServiceImpl {
         // Call `getLights`, the response is a json object in the form `{ "lights": [ { ... }, { ... } ] }`
         JSONObject response = apiService.getLights();
         // get the "lights" array from the response
@@ -31,7 +30,11 @@ public class LedControllerImpl implements LedController {
         System.out.println("First light id is: " + firstLight.getInt("id"));
         System.out.println("First light color is: " + firstLight.getString("color"));
     }
-    public List<JSONObject> getGroupLeds() throws IOException {
+
+	public JSONObject GetLights() throws ApiServiceImpl, IOException {
+		return apiService.getLights();
+	}
+    public List<JSONObject> getGroupLeds() throws IOException, ApiServiceImpl {
         // Call `getLights` to get the status of all lights
         JSONObject response = apiService.getLights();
         JSONArray lights = response.getJSONArray("lights");

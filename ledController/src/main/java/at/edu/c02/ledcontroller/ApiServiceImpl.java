@@ -14,7 +14,7 @@ import java.net.URL;
  * Each method here should correspond to an API call, accept the correct parameters and return the response.
  * Do not implement any other logic here - the ApiService will be mocked to unit test the logic without needing a server.
  */
-public class ApiServiceImpl implements ApiService {
+public class ApiServiceImpl extends Throwable implements ApiService {
     /**
      * This method calls the `GET /getLights` endpoint and returns the response.
      * TODO: When adding additional API calls, refactor this method. Extract/Create at least one private method that
@@ -26,27 +26,51 @@ public class ApiServiceImpl implements ApiService {
     private static final String BASE_URL = "https://balanced-civet-91.hasura.app/api/rest";
 
     @Override
-    public JSONObject getLights() throws IOException {
-        return sendRequest("/getLights", "GET", null);
+    public JSONObject getLights() throws IOException, ApiServiceImpl {
+        return sendRequest(getHttpURLConnection("/getLights", "GET", null), null);
     }
 
-    public JSONObject setLed(String ledId, String color, boolean state) throws IOException {
+	public JSONObject getLight(String id) throws IOException, ApiServiceImpl {
+		return sendRequest(getHttpURLConnection("/lights", "GET", id), null);
+	}
+
+    public JSONObject setLed(String ledId, String color, boolean state) throws IOException, ApiServiceImpl {
         JSONObject requestBody = new JSONObject();
         requestBody.put("ledId", ledId);
         requestBody.put("color", color);
         requestBody.put("state", state);
 
-        return sendRequest("/setLed", "POST", requestBody);
+        return sendRequest(getHttpURLConnection("/setLed", "POST", null), requestBody);
     }
 
-    private JSONObject sendRequest(String endpoint, String method, JSONObject requestBody) throws IOException {
-        URL url = new URL(BASE_URL + endpoint);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod(method);
-        connection.setRequestProperty("Content-Type", "application/json");
-        connection.setRequestProperty("X-Hasura-Group-ID", "Todo");
+	private static String GetUrl(String endpoint, String method, String postfix) throws ApiServiceImpl {
+		if(method.equals("GET")) {
+			if(postfix == null)
+				return BASE_URL + endpoint;
+			else
+				return BASE_URL + endpoint + "/" + postfix;
 
-        if (requestBody != null) {
+		}
+		if(method.equals("POST"))
+			return BASE_URL + endpoint;
+
+		System.out.println("Method "+method+" is not supported!");
+		throw new ApiServiceImpl();
+	}
+
+	private static HttpURLConnection getHttpURLConnection(String endpoint, String method, String postfix) throws IOException, ApiServiceImpl {
+		URL url;
+		url = new URL(GetUrl(endpoint,method, postfix));
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		connection.setRequestMethod(method);
+		connection.setRequestProperty("Content-Type", "application/json");
+		connection.setRequestProperty("X-Hasura-Group-ID", "rot");
+		return connection;
+	}
+
+    private JSONObject sendRequest(HttpURLConnection connection, JSONObject requestBody) throws IOException {
+
+		if (requestBody != null) {
             connection.setDoOutput(true);
             try (OutputStream os = connection.getOutputStream()) {
                 os.write(requestBody.toString().getBytes());
@@ -56,7 +80,7 @@ public class ApiServiceImpl implements ApiService {
 
         int responseCode = connection.getResponseCode();
         if (responseCode != HttpURLConnection.HTTP_OK) {
-            throw new IOException("Error: Request to " + endpoint + " failed with response code " + responseCode);
+            throw new IOException("Error: Request to " + connection.getURL() + " failed with response code " + responseCode);
         }
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
@@ -68,4 +92,6 @@ public class ApiServiceImpl implements ApiService {
             return new JSONObject(sb.toString());
         }
     }
+
+
 }
