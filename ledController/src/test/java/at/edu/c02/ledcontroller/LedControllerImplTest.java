@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
         }
 
         @Test
-        void testDemo() throws IOException {
+        void testDemo() throws IOException, ApiServiceImpl {
             // Arrange: Set up the mocked API response
             JSONObject mockResponse = new JSONObject();
             JSONArray lightsArray = new JSONArray();
